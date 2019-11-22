@@ -20,7 +20,11 @@ public class Controls : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown("r"))
+        {
             SceneManager.LoadScene(0);
+            
+        }
+            
         if (Input.GetKeyDown("space") && !paused)
         {
             paused = !paused;
@@ -32,8 +36,10 @@ public class Controls : MonoBehaviour
             Time.timeScale = 1f;
         }
         if (Input.GetKeyDown("["))
-            Time.timeScale = Time.timeScale/2;
+            Time.timeScale = Time.timeScale / 2;
         else if (Input.GetKeyDown("]"))
             Time.timeScale = Time.timeScale * 2;
+        if (Input.GetKeyDown("q"))
+            Application.Quit();
     }
 }

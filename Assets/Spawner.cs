@@ -25,6 +25,7 @@ public class Spawner : MonoBehaviour
         //Spawn Food
         for (int i = 0; i < foodnum; i++)
         {
+            
             position = new Vector3(Random.Range(-size / 2.1f, size / 2.1f), 0.3f, Random.Range(-size / 2.1f, size / 2.1f));
             Instantiate(food, position + transform.position, Quaternion.identity);
         }

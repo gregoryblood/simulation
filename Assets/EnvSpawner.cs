@@ -38,7 +38,7 @@ public class EnvSpawner : MonoBehaviour
         else
             size = int.Parse(getSize.text);
         if (string.IsNullOrEmpty(getEnvnum.text))
-            envnumsquared = 3;
+            envnumsquared = 1;
         else
             envnumsquared = int.Parse(getEnvnum.text);
 

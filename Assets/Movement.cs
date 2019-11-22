@@ -41,7 +41,7 @@ public class Movement : MonoBehaviour
         speed = Random.Range(1, 6); //Speed they travel
         needed = Mathf.RoundToInt(speed); //How much they need to eat
         efficiency = (6 - speed); //Rate at which they lose energy
-        energy = 3; //Starting energy for the day
+        energy = 4; //Starting energy for the day
 
         stats.UpdateStart();
     }
@@ -56,7 +56,7 @@ public class Movement : MonoBehaviour
         transform.LookAt(target);
 
         //Starvation
-        if (Time.time > nextenergysub)
+        if (Time.timeSinceLevelLoad > nextenergysub)
         {
             nextenergysub += efficiency;
             energy--;
