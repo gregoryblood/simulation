@@ -141,10 +141,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  needed: 0
   efficiency: 1
   energy: 0
+  strtenergy: 4
+  birthtotal: 0
   deadmat: {fileID: 2100000, guid: 5dd618e2521268244a78b77ee82d8b4a, type: 2}
+  prefab: {fileID: 4536501678137304109}
 --- !u!54 &9122137752867215681
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -157,7 +159,7 @@ Rigidbody:
   m_Drag: 100
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0

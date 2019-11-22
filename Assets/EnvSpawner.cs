@@ -9,6 +9,7 @@ public class EnvSpawner : MonoBehaviour
     public int size = 50;
     public int foodnum = 50;
     public int creaturenum = 50;
+    public float foodrate = 5;
     public GameObject env;
 
     public Canvas ui;
@@ -16,6 +17,7 @@ public class EnvSpawner : MonoBehaviour
     public InputField getFood;
     public InputField getSize;
     public InputField getEnvnum;
+    public InputField getFoodrate;
 
 
     private void Start()
@@ -30,7 +32,7 @@ public class EnvSpawner : MonoBehaviour
         else
             creaturenum = int.Parse(getCreature.text);
         if (string.IsNullOrEmpty(getFood.text))
-            foodnum = 50;
+            foodnum = 10;
         else
             foodnum = int.Parse(getFood.text);
         if (string.IsNullOrEmpty(getSize.text))
@@ -41,6 +43,10 @@ public class EnvSpawner : MonoBehaviour
             envnumsquared = 1;
         else
             envnumsquared = int.Parse(getEnvnum.text);
+        if (string.IsNullOrEmpty(getFoodrate.text))
+            foodrate = 5;
+        else
+            foodrate = (int.Parse(getFoodrate.text));
 
 
         ui.enabled = false;
@@ -57,6 +63,7 @@ public class EnvSpawner : MonoBehaviour
         env.GetComponent<Spawner>().size = size;
         env.GetComponent<Spawner>().creaturenum = creaturenum;
         env.GetComponent<Spawner>().foodnum = foodnum;
+        env.GetComponent<Spawner>().foodrate = foodrate;
 
 
 

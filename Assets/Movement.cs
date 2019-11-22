@@ -4,56 +4,89 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    
-    public float speed = 0;
 
-    public int needed = 0;
-    public float efficiency = 0;
-    public int energy = 0;
+    public float speed;
+    public float efficiency;
+    public int energy;
+    public int strtenergy;
+    public int birthtotal;
+    public int gen = 0;
+
+
+
     public Material deadmat;
 
     private Vector3 target;
     private GameObject[] foods;
-    private int numate = 0;
     private GameObject food = null;
-    private float distance = Mathf.Infinity;
+
     private Vector3 position;
     private Vector3 startpos;
     private bool nofood = false;
-    private bool done = false;
-    private bool reported = false;
     private bool dead = false;
 
-    private float nextenergysub = 0f;
+    public float nextenergysub = 0f;
     private Statscript stats;
+    private float corpsetime = 3f;
+
+ 
 
 
     // Start is called before the first frame update
     void Start()
     {
         stats = GameObject.Find("STATS").GetComponent<Statscript>();
-        position = transform.position;
-        startpos = position;
-        Findclosestfood();
-        target = food.transform.position;
 
-        
-        speed = Random.Range(1, 6); //Speed they travel
-        needed = Mathf.RoundToInt(speed); //How much they need to eat
-        efficiency = (6 - speed); //Rate at which they lose energy
-        energy = 4; //Starting energy for the day
+        nextenergysub = Time.time;
+        if (gen == 0)
+        {
 
-        stats.UpdateStart();
+            speed = Random.Range(1, 6); //Speed they travel
+            efficiency = (6 - speed); //Rate at which they lose energy
+            strtenergy = 4;
+            energy = strtenergy; //Starting energy for the day
+            birthtotal = 10;
+            
+
+        }
+        else
+        {
+            
+            speed += Random.Range(-1, 1); //Speed they travel
+            if (speed > 6)
+                speed = 6;
+            efficiency = (6 - speed); //Rate at which they lose energy
+            strtenergy += Random.Range(-1, 1);
+            energy = strtenergy; //Starting energy for the day
+            birthtotal += Random.Range(-1, 1);
+            
+            
+        }
+
+        stats.NewLife(speed, efficiency, strtenergy, birthtotal);
     }
-
+    
     // Update is called once per frame
     void Update()
     {
+        
         float step = speed * Time.deltaTime; // calculate distance to move
 
-        transform.position = Vector3.MoveTowards(transform.position, target, step);
-        target.y = transform.position.y;
-        transform.LookAt(target);
+        if (energy == birthtotal)
+        {
+            CreateGen();
+            energy -= strtenergy;
+        }
+
+        Findclosestfood();
+
+        if (!nofood && food && !dead)
+        {
+            target = food.transform.position;
+            transform.position = Vector3.MoveTowards(transform.position, target, step);
+            target.y = transform.position.y;
+            transform.LookAt(target);
+        }
 
         //Starvation
         if (Time.timeSinceLevelLoad > nextenergysub)
@@ -63,42 +96,35 @@ public class Movement : MonoBehaviour
             if (energy == 0)
                 dead = true;
         }
-        if (!food && nofood && numate < needed)
-        {
-            dead = true;
-        }
-        if (food && numate < needed)
-        {
-            target = food.transform.position;
-        }
-        else if (!food && numate < needed && !nofood)
-        {
-            Findclosestfood();
-        }
-        else if (numate >= needed)
-        {
-            target = startpos;
-            done = true;
-        }
-        if (dead && !done)
+
+        if (dead)
         {
             speed = 0;
             var child = transform.GetChild(0);
-
             child.GetComponent<Renderer>().material = deadmat;
-        }
-        
-        if (transform.position == startpos && done && !reported)
-        {
-            
-            stats.UpdateStats(speed, efficiency);
-            reported = true;
+            corpsetime -= Time.deltaTime;
+            if (corpsetime < 0)
+            {
+                stats.NewDeath(speed, efficiency, strtenergy, birthtotal);
+                Destroy(gameObject);
+
+            }
+
         }
 
     }
+    private void CreateGen()
+    {
+        GameObject kid = Instantiate(gameObject, transform.position, Quaternion.identity);
+        kid.GetComponent<Movement>().gen = gen + 1;
+        kid.GetComponent<Movement>().speed = speed;
+        kid.GetComponent<Movement>().efficiency = efficiency;
+        kid.GetComponent<Movement>().strtenergy = strtenergy;
+        kid.GetComponent<Movement>().birthtotal = birthtotal;
+    }
     private void Findclosestfood()
     {
-        distance = Mathf.Infinity;
+
         foods = GameObject.FindGameObjectsWithTag("food");
         if (foods.Length == 0)
         {
@@ -106,25 +132,28 @@ public class Movement : MonoBehaviour
             food = null;
             return;
         }
-        foreach (GameObject fooditem in foods)
+        nofood = false;
+        food = null;
+        float minDist = Mathf.Infinity;
+        Vector3 currentPos = transform.position;
+        foreach (GameObject t in foods)
         {
-            Vector3 diff = fooditem.transform.position - position;
-            float curDistance = diff.sqrMagnitude;
-            if (curDistance < distance)
+            float dist = Vector3.Distance(t.transform.position, currentPos);
+            if (dist < minDist)
             {
-                food = fooditem;
-                distance = curDistance;
+                food = t;
+                minDist = dist;
             }
-        }   
+        }
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "food")
+        if (other.gameObject.tag == "food" && !dead)
         {
             energy++;
-            numate++;
             Destroy(other.gameObject);
+
         }
-            
+
     }
 }

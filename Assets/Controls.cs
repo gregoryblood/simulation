@@ -13,6 +13,7 @@ public class Controls : MonoBehaviour
     void Start()
     {
         paused = false;
+        Time.timeScale = 1f;
         //Time.timeScale = 0f;
     }
 
