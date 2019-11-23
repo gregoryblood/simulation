@@ -43,10 +43,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d886f2299e921c24e9b73dfe96fd8767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodnum: 500
-  creaturenum: 200
-  size: 25
+  foodnum: 50
+  creaturenum: 25
+  size: 50
+  foodrate: 5
   food: {fileID: 8171387090325144793, guid: 1814701f3da5f63448136a4b0c5be078, type: 3}
   creature: {fileID: 4536501678137304109, guid: 1cb9b368962b489408922b9ded74562f,
     type: 3}
+  predator: {fileID: 839035299913931984, guid: c678d53409093d14094bd646cc75f312, type: 3}
   floor: {fileID: 485451022135338185, guid: 0b548b5c6e9460b4fb081be8442cf510, type: 3}

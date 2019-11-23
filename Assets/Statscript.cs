@@ -7,6 +7,7 @@ public class Statscript : MonoBehaviour
 {
 
     public Text txtstats;
+    public int boards;
 
     private float avgspeed = 0f;
     private float avgeffc = 0f;
@@ -18,11 +19,23 @@ public class Statscript : MonoBehaviour
     private float ttlstrtenergy = 0;
     private float ttlbirthtotal = 0;
 
+    private void Start()
+    {
+        enabled = false;
+    }
+    public void Enablestats()
+    {
+        enabled = true;
+    }
+    public void UpdateBoards(int inboards)
+    {
+        boards = inboards;
+    }
 
-
-    public void NewLife (float speed, float effc, int strtenergy, int birthtotal)
+    public void NewLife (float speed, float effc, float strtenergy, float birthtotal)
     {
         total++;
+
         ttlspeed += speed;
         ttleffc += effc;
         ttlstrtenergy += strtenergy;
@@ -30,7 +43,7 @@ public class Statscript : MonoBehaviour
         avgspeed = ttlspeed / total;
         avgeffc = ttleffc / total;
     }
-    public void NewDeath(float speed, float effc, int strtenergy, int birthtotal)
+    public void NewDeath(float speed, float effc, float strtenergy, float birthtotal)
     {
         total--;
         ttlspeed -= speed;
@@ -44,8 +57,8 @@ public class Statscript : MonoBehaviour
     }
     public void Update()
     {
-        txtstats.text = "Total: " + total + " Avg Speed: " + Mathf.Round(avgspeed * 100f) / 100f + " Avg Efficiency: " + Mathf.Round(avgeffc * 100f) / 100f + 
-                        " Total Energy to Start: " + avgstrtenergy + " Total Energy needed for Birth: " + avgbirthtotal;
+        txtstats.text = "Time Scale: " + Time.timeScale + "\nAvg Total per Environment: " + (total / boards).ToString("F2") + " || Avg Speed: " + avgspeed.ToString("F2") + " || Avg Energy per Second: " + (0.1f + avgeffc).ToString("F2") +
+                        "\nTotal Energy to Start: " + avgstrtenergy.ToString("F2") + " || Total Energy needed for Birth: " + avgbirthtotal.ToString("F2");
         
     }
 }

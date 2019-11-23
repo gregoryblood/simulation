@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class EnvSpawner : MonoBehaviour
 {
-    public int envnumsquared = 1;
+    public int envnum = 1;
     public int size = 50;
     public int foodnum = 50;
     public int creaturenum = 50;
@@ -19,11 +19,12 @@ public class EnvSpawner : MonoBehaviour
     public InputField getEnvnum;
     public InputField getFoodrate;
 
+    public Button button;
 
+    private Statscript stats;
     private void Start()
     {
         ui.enabled = true;
-        Time.timeScale = 0f;
     }
     public void SetData()
     {
@@ -32,7 +33,7 @@ public class EnvSpawner : MonoBehaviour
         else
             creaturenum = int.Parse(getCreature.text);
         if (string.IsNullOrEmpty(getFood.text))
-            foodnum = 10;
+            foodnum = 50;
         else
             foodnum = int.Parse(getFood.text);
         if (string.IsNullOrEmpty(getSize.text))
@@ -40,22 +41,22 @@ public class EnvSpawner : MonoBehaviour
         else
             size = int.Parse(getSize.text);
         if (string.IsNullOrEmpty(getEnvnum.text))
-            envnumsquared = 1;
+            envnum = 1;
         else
-            envnumsquared = int.Parse(getEnvnum.text);
+            envnum = int.Parse(getEnvnum.text);
         if (string.IsNullOrEmpty(getFoodrate.text))
             foodrate = 5;
         else
-            foodrate = (int.Parse(getFoodrate.text));
+            foodrate = (float.Parse(getFoodrate.text));
 
 
         ui.enabled = false;
 
         Spawn();
-        Time.timeScale = 1f;
-
-
-        
+        button.enabled = false;
+        stats = GameObject.Find("STATS").GetComponent<Statscript>();
+        stats.UpdateBoards(envnum * envnum);
+        stats.Enablestats();
     }
     
     void Spawn()
@@ -68,11 +69,16 @@ public class EnvSpawner : MonoBehaviour
 
 
 
-        for (int i = 0; i < envnumsquared; i++)
+        for (int i = 0; i < envnum; i++)
         {
-            for (int j = 0; j < envnumsquared; j++)
+            for (int j = 0; j < envnum; j++)
             {
-                Instantiate(env, new Vector3(i * (size * 2), 0, j * (size * 2)), Quaternion.identity);
+                if (envnum >= 0)
+                {
+                    Instantiate(env, new Vector3(i * (size * 2), 0, j * (size * 2)), Quaternion.identity);
+                    envnum--;
+                }
+                
             }
         }
     }

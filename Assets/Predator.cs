@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class Predator : MonoBehaviour
 {
 
     public float speed;
@@ -12,8 +12,7 @@ public class Movement : MonoBehaviour
     public float birthtotal;
     public int gen = 0;
     public bool mutate = true;
-    public float bodysize = 1f;
-    public bool dead = false;
+    public float bodysize;
 
     private Vector3 target;
     private GameObject[] foods;
@@ -22,13 +21,13 @@ public class Movement : MonoBehaviour
     private Vector3 position;
     private Vector3 startpos;
     private bool nofood = false;
-    
+    private bool dead = false;
 
     private Statscript stats;
     private float corpsetime = 3f;
     private bool reportdeath = false;
     private float eps = 0f;
- 
+
 
 
     // Start is called before the first frame update
@@ -36,17 +35,15 @@ public class Movement : MonoBehaviour
     {
         stats = GameObject.Find("STATS").GetComponent<Statscript>();
 
-        
+
         if (mutate)
         {
             gameObject.transform.GetChild(0).GetComponent<Renderer>()
-            .material.SetColor("_BaseColor", Random.ColorHSV(0.5f, 1f, 1f, 1f, 1f, 1f));
+            .material.SetColor("_BaseColor", Random.ColorHSV(0f, 0.5f, 1f, 1f, 1f, 1f));
             mutate = false;
 
-
-            speed = Random.Range(0.1f, 12f); //Speed they travel
-
-            strtenergy = Random.Range(5f, 12f);
+            speed = Random.Range(1f, 12f);
+            strtenergy = Random.Range(1f, 12f);
             energy = strtenergy; //Starting energy for the day
             birthtotal = strtenergy + Random.Range(1f, 12f);
             bodysize = Random.Range(1f, 4f);
@@ -58,15 +55,16 @@ public class Movement : MonoBehaviour
             .material.SetColor("_BaseColor", Random.ColorHSV(0f, 0.5f, 1f, 1f, 1f, 1f));
             mutate = false;
 
-            speed = Random.Range(1f, 12f);
-            strtenergy = Random.Range(5f, 12f);
+            speed = Random.Range(2f, 12f);
+            strtenergy = Random.Range(24f, 50f);
             energy = strtenergy; //Starting energy for the day
-            birthtotal = strtenergy + Random.Range(1f, 12f);
+            birthtotal = strtenergy + Random.Range(24f, 50f);
             bodysize = Random.Range(1f, 4f);
         }
+            
         else
         {
-            
+
             speed *= Random.Range(0.9f, 1.1f); //Speed they travel
 
             strtenergy *= Random.Range(0.9f, 1.1f);
@@ -77,17 +75,16 @@ public class Movement : MonoBehaviour
 
             if (bodysize < 1f)
                 bodysize = 1f;
-
             if (birthtotal <= strtenergy)
                 birthtotal = strtenergy + 1;
 
 
         }
         transform.localScale = new Vector3(bodysize, bodysize, bodysize);
-        efficiency = (bodysize * bodysize * bodysize) * (speed * speed) / 100f ;
+        efficiency = (bodysize * bodysize * bodysize) * (speed * speed) / 100f;
         stats.NewLife(speed, efficiency, strtenergy, birthtotal);
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -101,19 +98,18 @@ public class Movement : MonoBehaviour
         {
             if (!reportdeath)
             {
-                gameObject.tag = "corpse";
                 stats.NewDeath(speed, efficiency, strtenergy, birthtotal);
                 reportdeath = true;
             }
-            
+
             target = transform.position;
 
             transform.Translate(Vector3.down * Time.deltaTime);
             corpsetime -= Time.deltaTime;
-            
+
             if (corpsetime < 0)
             {
-                
+
                 Destroy(gameObject);
             }
             return;
@@ -137,30 +133,30 @@ public class Movement : MonoBehaviour
             transform.LookAt(target);
         }
 
-        
+
 
     }
     private void CreateGen()
     {
         GameObject kid = Instantiate(gameObject, transform.position, Quaternion.identity);
-        kid.GetComponent<Movement>().gen = gen + 1;
+        kid.GetComponent<Predator>().gen = gen + 1;
         if (Random.Range(0f, 10f) > 9f)
         {
-            kid.GetComponent<Movement>().mutate = true;
+            kid.GetComponent<Predator>().mutate = true;
         }
         else
         {
-            kid.GetComponent<Movement>().speed = speed;
-            kid.GetComponent<Movement>().efficiency = efficiency;
-            kid.GetComponent<Movement>().strtenergy = strtenergy;
-            kid.GetComponent<Movement>().birthtotal = birthtotal;
+            kid.GetComponent<Predator>().speed = speed;
+            kid.GetComponent<Predator>().efficiency = efficiency;
+            kid.GetComponent<Predator>().strtenergy = strtenergy;
+            kid.GetComponent<Predator>().birthtotal = birthtotal;
         }
 
     }
     private void Findclosestfood()
     {
 
-        foods = GameObject.FindGameObjectsWithTag("food");
+        foods = GameObject.FindGameObjectsWithTag("creature");
         if (foods == null)
         {
             nofood = true;
@@ -173,20 +169,29 @@ public class Movement : MonoBehaviour
         Vector3 currentPos = transform.position;
         foreach (GameObject t in foods)
         {
-            float dist = Vector3.Distance(t.transform.position, currentPos);
-            if (dist < minDist)
+            if (bodysize / t.GetComponent<Movement>().bodysize > 1.2f)
             {
-                food = t;
-                minDist = dist;
+                float dist = Vector3.Distance(t.transform.position, currentPos);
+                if (dist < minDist)
+                {
+                    food = t;
+                    minDist = dist;
+                }
             }
         }
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "food" && !dead)
+        if (other.gameObject.tag == "creature" && !dead)
         {
-            energy++;
-            Destroy(other.gameObject);
+            if (bodysize / other.gameObject.GetComponent<Movement>().bodysize > 1.2f)
+            {
+                energy += other.gameObject.GetComponent<Movement>().energy * ( other.gameObject.GetComponent<Movement>().bodysize *
+                            other.gameObject.GetComponent<Movement>().bodysize *
+                            other.gameObject.GetComponent<Movement>().bodysize);
+                other.gameObject.GetComponent<Movement>().dead = true;
+            }
+            
 
         }
 

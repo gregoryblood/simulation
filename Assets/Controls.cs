@@ -40,7 +40,5 @@ public class Controls : MonoBehaviour
             Time.timeScale = Time.timeScale / 2;
         else if (Input.GetKeyDown("]"))
             Time.timeScale = Time.timeScale * 2;
-        if (Input.GetKeyDown("q"))
-            Application.Quit();
     }
 }
